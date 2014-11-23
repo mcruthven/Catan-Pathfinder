@@ -1,117 +1,88 @@
 import unittest
 
-class GameBoard:
+import numpy as np
+import matplotlib.pyplot as plt
+
+RESOURCES_STEP = [(2,1),(1,2),(-1,1),(-2,-1),(-1,-2),(1,-1)]
+BUILDING_STEP = [(1,0),(1,1),(0,1),(-1,0),(-1,-1),(0,-1)]
+
+class Board:
     def __init__(self, num_rings = 3):
-        self.num_resources = self.calc_resources_from_rings(num_rings)
+        self.resources = dict()  
+        self.buildings = dict()
 
+        # Build the dictionaries
+        if num_rings > 0:
+            self.resources[(0,0)] = Resource()
+            self.createGrid((0,0), num_rings)
 
-    """
-    Helpers
-    """
-    def calc_resources_from_rings(self, num_rings):
-        """
-        Calculate number of resources from number of rings
-        Rings are number of rings from the center of the board
-        """
-        # non positive number of rings - returns 0 resources
-        if num_rings <= 0:
-            return 0
-        if num_rings == 1:
-            return 1
+    def createGrid(self, start, depth):
+        for n_step in BUILDING_STEP:
+            n_new = start[0] + n_step[0], start[1] + n_step[1]
+            if n_new not in self.buildings:
+                self.buildings[n_new] = Building()
+
+        if depth < 2:
+            return
+
+        for h_step in RESOURCES_STEP:
+                    h_new = start[0] + h_step[0], start[1] + h_step[1]
+                    if h_new not in self.resources:
+                        self.resources[h_new] = Resource()
+                    self.createGrid(h_new, depth - 1)
+                
+
+class Building:
+    def __init__(self):
+        pass
         
-        return 1 + 3 * num_rings * (num_rings - 1)
+class Resource:
+    def __init__(self):
+        pass
 
-class Hexagon:
-    """
-    Coordinate System: 
-    (Index)
-    0   1   2   3   4   5
-    z,  y,  x, -z, -y, -x - Vertices
-    zy, yx, x_z, _z_y, _y_x, _xz  - Edges, Hexagons
-    """
-    def __init__(self, pos = (0,0,0), vertices = [0,0,0,0,0,0], edges = [0,0,0,0,0,0]):
-        self.pos = pos
-        self.vertices = vertices
-        self.edges = edges
-        self.adjacents = [None, None, None, None, None, None]
-
-    def ref(self, other):
-        """
-        Reference another hexagon as an adjacent
-
-        other - another hexagon
-        returns success boolean
-        """
-        dx = other.pos[0] - self.pos[0]
-        dy = other.pos[1] - self.pos[1]
-        dz = other.pos[2] - self.pos[2]
-
-        if dx > 1 or dx < -1 or dy > 1 or dy < -1 or dz > 1 or dz < -1:
-            return False
-
-        if dx == 1:
-            pos = 1 - dz
-        elif dx == -1:
-            pos = -1 + dy
-        else:
-            if dy == 1:
-                pos = 0
-            else:
-                pos = 3
-        if self.adjacents[pos] != None:
-            return False
-
-        self.adjacents[pos] = other
-        other.adjacents[(pos + 3) % 6] = self
-        return True
-
-
-
-
-class TestGameBoardHelpers(unittest.TestCase):
+class TestGame(unittest.TestCase):
     def setUp(self):
-        self.board = GameBoard()
+        pass
 
-    def test_resources_from_rings(self):
-        self.assertEqual(self.board.calc_resources_from_rings(-1), 0)
-        self.assertEqual(self.board.calc_resources_from_rings(0), 0)
-        self.assertEqual(self.board.calc_resources_from_rings(1), 1)
-        self.assertEqual(self.board.calc_resources_from_rings(2), 7)
-        self.assertEqual(self.board.calc_resources_from_rings(3), 19)
+    def test_building_function(self):
+        ring0 = Board(0)
+        ring1 = Board(1)
+        ring2 = Board(2)
+        ring3 = Board(3)
+        ring4 = Board(4)
+
+        self.assertEqual(len(ring0.resources), 0)
+        self.assertEqual(len(ring1.resources), 1)
+        self.assertEqual(len(ring2.resources), 7)
+        self.assertEqual(len(ring3.resources), 19)
+        self.assertEqual(len(ring4.resources), 37)
+
+        self.assertEqual(len(ring0.buildings), 0)
+        self.assertEqual(len(ring1.buildings), 6)
+        self.assertEqual(len(ring2.buildings), 24)
+        self.assertEqual(len(ring3.buildings), 54)
+        self.assertEqual(len(ring4.buildings), 96)
 
 
-class TestHexagon(unittest.TestCase):
-    def setUp(self):
-        self.hexagon = Hexagon(pos = (0,0,0))
-
-    def test_resources_from_rings(self):
-        testzy = Hexagon(pos = (0, 1, 1))
-        testyx = Hexagon(pos = (1, 1, 0))
-        testx_z = Hexagon(pos = (1, 0, -1))
-        test_z_y = Hexagon(pos = (0, -1, -1)) 
-        test_y_x = Hexagon(pos = (-1, -1, 0))
-        test_xz = Hexagon(pos = (-1, 0, 1))
-
-        self.hexagon.ref(testzy)
-        self.hexagon.ref(testyx)
-        self.hexagon.ref(testx_z)
-        self.hexagon.ref(test_z_y)
-        self.hexagon.ref(test_y_x)
-        self.hexagon.ref(test_xz)
-
-        self.assertEqual(self.hexagon.adjacents[0], testzy)
-        self.assertEqual(self.hexagon.adjacents[1], testyx)
-        self.assertEqual(self.hexagon.adjacents[2], testx_z)
-        self.assertEqual(self.hexagon.adjacents[3], test_z_y)
-        self.assertEqual(self.hexagon.adjacents[4], test_y_x)
-        self.assertEqual(self.hexagon.adjacents[5], test_xz)
-
-        self.assertEqual(testzy.adjacents[3], self.hexagon)
-        self.assertEqual(testyx.adjacents[4], self.hexagon)
-        self.assertEqual(testx_z.adjacents[5], self.hexagon)
-        self.assertEqual(test_z_y.adjacents[0], self.hexagon)
-        self.assertEqual(test_y_x.adjacents[1], self.hexagon)
-        self.assertEqual(test_xz.adjacents[2], self.hexagon)
+def BoardGraphTest():
+    board = Board()
+    x = []
+    y = []
+    x1 = []
+    y1 = []
+    for key, item in board.resources.items():
+        x.append(key[0])
+        y.append(key[1])
+    for key, item in board.buildings.items():
+        x1.append(key[0])
+        y1.append(key[1])
+    plt.plot(x,y, 'ro')
+    plt.plot(x1,y1, 'bo')
+    plt.axis([-6, 6, -7, 7])
+    plt.show()
 
 if __name__ == "__main__":
+    # BoardGraphTest()
     unittest.main()
+
+
