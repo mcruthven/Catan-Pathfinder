@@ -2,13 +2,20 @@ from models import Board, Hexagon, Vertex
 from views import Display
 
 
-if __name__ == "__main__":
-    display = Display()
-    board = Board(5)
-    testHexagon = board.hexagons[(0,0)]
-    print testHexagon
+def GameLoop():
+    pass
 
-    display.drawHexagon(testHexagon)
+def DrawBoardTest():
+    board = Board(5)
+
+    # Showing the Board
+    display = Display()
+    display.drawBoard(board)
 
     display.wait()
     display.close()
+
+if __name__ == "__main__":
+    # DrawBoardTest()
+
+    GameLoop()

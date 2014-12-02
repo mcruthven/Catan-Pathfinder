@@ -25,6 +25,15 @@ VERTICES = [
     (-1, 0),
     (-.5, ROOT3_2)
 ]
+# Relations for vertices across hexagons
+RELATIONS = [
+    (0,2,5,3),
+    (0,4,1,3),
+    (1,5,2,4),
+    (3,5,2,0),
+    (4,0,3,1),
+    (4,2,5,1)
+]
 
 """
 Board Builder Class
@@ -58,7 +67,9 @@ class Board():
         for i, hexagon in enumerate(HEXAGONS):
             newPos = round(r.pos[0] + hexagon[0], 3), round(r.pos[1] + hexagon[1], 3)
             newR = self.hexagons.get(newPos, Hexagon(pos = newPos))
-            newR.vertices[(i + 4) % 6], newR.vertices[(i + 3) % 6] = r.vertices[i], r.vertices[(i + 1) % 6]
+            rel = RELATIONS[i]
+            newR.vertices[rel[1]], newR.vertices[rel[3]] = r.vertices[rel[0]], r.vertices[rel[2]]
+            # newR.vertices[(i + 4) % 6], newR.vertices[(i + 3) % 6] = r.vertices[i], r.vertices[(i + 1) % 6]
             self.buildRing(newR, depth - 1)
             if newPos not in self.hexagons:
                 self.hexagons[newPos] = newR

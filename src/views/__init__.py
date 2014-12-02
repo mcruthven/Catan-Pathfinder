@@ -19,6 +19,10 @@ class Display:
         # Create the Window
         self.window = GraphWin(title, size[0], size[1])
 
+    def drawBoard(self, board):
+         for hexagon in board.hexagons.values():
+            self.drawHexagon(hexagon)
+
     def drawHexagon(self, hexagon):
         self._drawPolygon(MATERIALS_COLOR[hexagon.resource], *[v.pos for v in hexagon.vertices])
 
@@ -37,7 +41,6 @@ class Display:
         self.window.close()
 
 if __name__ == "__main__":
-
     display = Display()
 
     display._drawPolygon("grey", (0,0), (0,100), (100,100), (100,0))
