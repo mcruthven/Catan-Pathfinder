@@ -1,5 +1,6 @@
 import unittest
-import Vertex, Hexagon
+from Vertex import Vertex
+from Hexagon import Hexagon
 
 """
 Constants for Board Building
@@ -7,7 +8,7 @@ Constants for Board Building
 ROOT3 = round(3**.5, 3)
 ROOT3_2 = round(ROOT3/2.0, 3)
 
-RESOURCES = [
+HEXAGONS = [
     (0, ROOT3),
     (1.5, ROOT3_2),
     (1.5, -ROOT3_2),
@@ -31,16 +32,16 @@ Generates a dictionary of Resources (Hexagons) and a dictionary of vertices
 """
 class Board():
     def __init__(self, num_rings = 3):
-        self.resources = dict()
+        self.hexagons = dict()
         self.vertices = dict()
         self.build(num_rings)
 
     def build(self,num_rings):
-        start = Resource((0,0))
-        self.resources[(0,0)] = start 
+        start = Hexagon((0,0))
+        self.hexagons[(0,0)] = start 
         self.buildRing(start, num_rings)
 
-        return self.resources
+        return self.hexagons
 
     def buildRing(self, r, depth):
         for i, vertex in enumerate(VERTICES):
@@ -54,13 +55,13 @@ class Board():
         if depth == 0:
             return
 
-        for i, resource in enumerate(RESOURCES):
-            newPos = round(r.pos[0] + resource[0], 3), round(r.pos[1] + resource[1], 3)
-            newR = self.resources.get(newPos, Resource(pos = newPos))
+        for i, hexagon in enumerate(HEXAGONS):
+            newPos = round(r.pos[0] + hexagon[0], 3), round(r.pos[1] + hexagon[1], 3)
+            newR = self.hexagons.get(newPos, Hexagon(pos = newPos))
             newR.vertices[(i + 4) % 6], newR.vertices[(i + 3) % 6] = r.vertices[i], r.vertices[(i + 1) % 6]
             self.buildRing(newR, depth - 1)
-            if newPos not in self.resources:
-                self.resources[newPos] = newR
+            if newPos not in self.hexagons:
+                self.hexagons[newPos] = newR
 
 """ 
 Testing
@@ -76,11 +77,11 @@ class TestGame(unittest.TestCase):
         ring3 = Board(3)
         ring4 = Board(4)
 
-        self.assertEqual(len(ring0.resources), 1)
-        self.assertEqual(len(ring1.resources), 7)
-        self.assertEqual(len(ring2.resources), 19)
-        self.assertEqual(len(ring3.resources), 37)
-        self.assertEqual(len(ring4.resources), 61)
+        self.assertEqual(len(ring0.hexagons), 1)
+        self.assertEqual(len(ring1.hexagons), 7)
+        self.assertEqual(len(ring2.hexagons), 19)
+        self.assertEqual(len(ring3.hexagons), 37)
+        self.assertEqual(len(ring4.hexagons), 61)
 
         self.assertEqual(len(ring0.vertices), 6)
         self.assertEqual(len(ring1.vertices), 24)
@@ -93,7 +94,7 @@ def TestGraphBoard(board):
     y = []
     x1 = []
     y1 = []
-    for key, item in board.resources.items():
+    for key, item in board.hexagons.items():
         x.append(key[0])
         y.append(key[1])
         for vertex in item.vertices:
