@@ -18,8 +18,11 @@ class Display:
         self.h_offset = size[1]/2
 
         # Create the Window
-        self.window = GraphWin(title, size[0], size[1])
+        self.window = GraphWin(title, size[0], size[1], autoflush = False)
 
+    """
+    Drawing Functions
+    """
     def drawBoard(self, board):
          for hexagon in board.hexagons.values():
             self.drawHexagon(hexagon)
@@ -27,19 +30,36 @@ class Display:
     def drawHexagon(self, hexagon):
         self._drawPolygon(MATERIALS_COLOR[hexagon.resource], *[v.pos for v in hexagon.vertices])
 
+    def drawPath(self, *points):
+        map(self._drawLine, zip(points, points[1:]))
+
     """
-    Helper Functions
+    Lifecycle Functions
     """
-    def _drawPolygon(self, color, *points):
-        _shape = Polygon(map(lambda pos: Point(self.w_offset + SCALE * pos[0], self.h_offset - SCALE * pos[1]), points))
-        _shape.setFill(color)
-        _shape.draw(self.window)
+    def update(self):
+        self.window.update()
 
     def wait(self):
         self.window.getMouse()
 
     def close(self):
         self.window.close()
+
+    """
+    Helper Functions
+    """
+    def _drawPolygon(self, color, *points):
+        _shape = Polygon(map(self._makePoint, points))
+        _shape.setFill(color)
+        _shape.draw(self.window)
+
+    def _drawLine(self, A, B):
+        _line = Line(self._makePoint(A), self._makePoint(B))
+        _line.setArrow("last")
+        _line.draw(self.window)
+
+    def _makePoint(self, pos):
+        return Point(self.w_offset + SCALE * pos[0], self.h_offset - SCALE * pos[1])
 
 if __name__ == "__main__":
     display = Display()

@@ -11,6 +11,7 @@ def DrawBoardTest():
     # Showing the Board
     display = Display()
     display.drawBoard(board)
+    display.update()
 
     display.wait()
     display.close()
@@ -18,4 +19,4 @@ def DrawBoardTest():
 if __name__ == "__main__":
     DrawBoardTest()
 
-    GameLoop()
+    # GameLoop()
