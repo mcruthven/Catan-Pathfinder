@@ -9,7 +9,7 @@ class Hexagon():
         self.resource = resource
 
     def printVertices(self):
-            print "\n" + "\n".join(map(str, self.vertices))
+        print "\n" + "\n".join(map(str, self.vertices))
 
     def __str__(self):
         return "Hexagon(" + self.resource + ") at " + str(self.pos) + " \nVertices:\n\t" + "\n\t".join(map(str, self.vertices))
