@@ -1,4 +1,4 @@
-import unittest
+import unittest, random
 from Vertex import Vertex
 from Hexagon import Hexagon
 
@@ -49,10 +49,50 @@ class Board():
     Building the Board
     """
     def build(self,num_rings):
-        start = Hexagon((0,0))
+        start = Hexagon(pos = (0,0))
         self.hexagons[(0,0)] = start 
         self.buildRing(start, num_rings)
         self.buildVertexRelations()
+
+        materials = self.makeMaterialsArray(num_rings)
+        random.shuffle(materials)
+        for i in self.hexagons:
+            self.hexagons[i].resource = materials.pop()
+
+        return self.hexagons
+
+    def calc_resources_from_rings(self, num_rings):
+        """
+        Calculate number of resources from number of rings
+        Rings are number of rings from the center of the board
+        """
+        # non positive number of rings - returns 0 resources
+        if num_rings <= 0:
+            return 0
+        if num_rings == 1:
+            return 7
+        
+        return 1 + 3 * num_rings * (num_rings + 1)
+
+    def makeMaterialsArray(self,num_rings):
+        manyResources = ["wood", "sheep", "wheat"]
+        fewResources = ["brick","stone"]
+        materials = []
+        desertValue = 0
+        if num_rings <= 2:
+            materials.append("desert")
+            desertValue = desertValue + 1
+        else:
+            for i in range(num_rings-1):
+                materials.append("desert")
+                desertValue = desertValue + 1
+        for resource in manyResources:
+            for i in range((self.calc_resources_from_rings(num_rings)-desertValue)/5+1):
+                materials.append(resource)
+        for resource in fewResources:
+            for i in range((self.calc_resources_from_rings(num_rings)-desertValue)/5):
+                materials.append(resource)
+        return materials
 
     def buildRing(self, r, depth):
         for i, vertex in enumerate(VERTICES):

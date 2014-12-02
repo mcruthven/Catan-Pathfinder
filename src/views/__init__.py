@@ -1,15 +1,16 @@
 from graphics import *
 
-SCALE = 100
+SCALE = 50
 
-MATERIALS_COLOR = {"stone": "grey",
-                    "sheep": "white",
-                    "brick": "red",
-                    "wood":  "brown",
-                    "wheat": "yellow"}
+MATERIALS_COLOR = {"stone": "darkgrey",
+                   "sheep": color_rgb(149,200,89),
+                   "brick": color_rgb(183,117,73),
+                   "wood":  "darkgreen",
+                   "wheat": "gold",
+                   "desert": "beige"}
 
 class Display:
-    def __init__(self, title = "Catan", size = (600, 600)):
+    def __init__(self, title = "Catan", size = (800, 800)):
         # Window Height / Width
         self.width = size[0]
         self.height = size[1]

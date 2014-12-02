@@ -6,7 +6,7 @@ def GameLoop():
     pass
 
 def DrawBoardTest():
-    board = Board(5)
+    board = Board(4)
 
     # Showing the Board
     display = Display()
@@ -16,6 +16,6 @@ def DrawBoardTest():
     display.close()
 
 if __name__ == "__main__":
-    # DrawBoardTest()
+    DrawBoardTest()
 
     GameLoop()
