@@ -29,7 +29,11 @@ class Display:
 
     def drawHexagon(self, hexagon):
         self._drawPolygon(MATERIALS_COLOR[hexagon.resource], *[v.pos for v in hexagon.vertices])
-        self._drawText(hexagon.pos,str(hexagon.value))
+        self.drawResource(hexagon)
+
+    def drawResource(self, hexagon):
+        self._drawCircle(hexagon.pos, 20, "white")
+        self._drawText(hexagon.pos, str(hexagon.value))
 
     def drawPath(self, *points):
         map(self._drawLine, zip(points, points[1:]))
@@ -54,13 +58,19 @@ class Display:
         _shape.setFill(color)
         _shape.draw(self.window)
 
+    def _drawCircle(self, pos, rad, color):
+        _circle = Circle(self._makePoint(pos), rad)
+        _circle.setFill(color)
+        _circle.draw(self.window)
+
     def _drawLine(self, A, B):
         _line = Line(self._makePoint(A), self._makePoint(B))
         _line.setArrow("last")
         _line.draw(self.window)
 
-    def _drawText(self, pos, value):
+    def _drawText(self, pos, value, size = 14):
         _text = Text(self._makePoint(pos),value)
+        _text.setSize(size)
         _text.draw(self.window)
 
     def _makePoint(self, pos):
