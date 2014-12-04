@@ -98,7 +98,7 @@ class Board():
         for resource in fewResources:
             for i in range((self.calc_resources_from_rings(num_rings)-desertValue)/5):
                 materials.append(resource)
-
+        
         manyNumbers = range(3,12)
         manyNumbers = [x for x in manyNumbers if x != 7]
         fewNumbers = [2,12]
@@ -141,10 +141,13 @@ class Board():
     Helpers for Navigation
     """
     def get_vertex_ref(self, vertex):
-        for i,j in enumerate(xrange(1 - vertex.parity, 6, 2)):
-            pos = vertex.pos[0] + VERTICES[j][0], vertex.pos[1] + VERTICES[j][1]
+        for i,j in enumerate(xrange(0, 6, 2)):
+            pos = (vertex.pos[0] + VERTICES[j][0], vertex.pos[1] + VERTICES[j][1]), (vertex.pos[0] + VERTICES[j + 1][0], vertex.pos[1] + VERTICES[j + 1][1])
             if vertex.v_refs[i] == None:
-                vertex.v_refs[i] = self.vertices.get(pos, None)
+                vertex.v_refs[i] = self.vertices.get(pos[1 - vertex.parity], None)
+            if vertex.h_refs[i] == None:
+                vertex.h_refs[i] = self.hexagons.get(pos[vertex.parity], None)
+
 
     """
     Helpers for printing
@@ -164,6 +167,9 @@ class TestGame(unittest.TestCase):
         self.ring4 = Board(4)
 
     def test_building_function(self):
+        """
+        Test number of vertices and hexagons as a result of board building
+        """
         self.assertEqual(len(self.ring0.hexagons), 1)
         self.assertEqual(len(self.ring1.hexagons), 7)
         self.assertEqual(len(self.ring2.hexagons), 19)
@@ -177,6 +183,11 @@ class TestGame(unittest.TestCase):
         self.assertEqual(len(self.ring4.vertices), 150)
 
     def test_vertex_ref_builder(self):
+        """
+        All cases
+        Tests vertex references in vertices. 
+        List Indices always start from positive y-axis (north) and clockwise by center point
+        """
         # Even Vertices
         testVertex = self.ring3.vertices[VERTICES[0]]
 
@@ -192,6 +203,11 @@ class TestGame(unittest.TestCase):
         self.assertEqual(testVertex.v_refs[2], self.ring3.vertices[VERTICES[0]])
 
     def test_vertex_ref(self):
+        """
+        Single case
+        Tests vertex references in vertices. 
+        List Indices always start from positive y-axis (north) and clockwise by center point
+        """
         # For Even Vertices
         testVertex = self.ring3.vertices[VERTICES[0]]
 
@@ -209,6 +225,26 @@ class TestGame(unittest.TestCase):
         self.assertEqual(testVertex.v_refs[0], self.ring3.vertices[2 * VERTICES[1][0], 2 * VERTICES[1][1]])
         self.assertEqual(testVertex.v_refs[1], self.ring3.vertices[VERTICES[2]])
         self.assertEqual(testVertex.v_refs[2], self.ring3.vertices[VERTICES[0]])
+
+    def test_vertex_hexagon_ref_builder(self):
+        """
+        Tests hexagon references in vertices. 
+        List Indices always start from positive y-axis (north) and clockwise by center point
+        """
+        # For Even Vertices
+        testVertex = self.ring3.vertices[VERTICES[0]]
+
+        self.assertEqual(testVertex.h_refs[0], self.ring3.hexagons[VERTICES[0][0] + VERTICES[1][0], VERTICES[0][1] + VERTICES[1][1]])
+        self.assertEqual(testVertex.h_refs[1], self.ring3.hexagons[(0,0)])
+        self.assertEqual(testVertex.h_refs[2], self.ring3.hexagons[VERTICES[0][0] + VERTICES[5][0], VERTICES[0][1] + VERTICES[5][1]])
+
+        # # For Odd Vertices
+        testVertex = self.ring3.vertices[VERTICES[1]]
+
+        self.assertEqual(testVertex.h_refs[0], self.ring3.hexagons[VERTICES[0][0] + VERTICES[1][0], VERTICES[0][1] + VERTICES[1][1]])
+        self.assertEqual(testVertex.h_refs[1], self.ring3.hexagons[VERTICES[1][0] + VERTICES[2][0], VERTICES[1][1] + VERTICES[2][1]])
+        self.assertEqual(testVertex.h_refs[2], self.ring3.hexagons[(0,0)])
+
 
 def TestGraphBoard(board):
     x = []
@@ -228,7 +264,7 @@ def TestGraphBoard(board):
 
 if __name__ == "__main__":
      #Importing here to avoid importing when not testing
-    import matplotlib.pyplot as plt
+    # import matplotlib.pyplot as plt
 
     unittest.main()
 

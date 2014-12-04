@@ -10,6 +10,7 @@ class Vertex():
         self.pos = pos
         self.parity = parity
         self.v_refs = [None] * 3
+        self.h_refs = [None] * 3
 
     def __str__(self):
         return "Vertex at " + str(self.pos)
