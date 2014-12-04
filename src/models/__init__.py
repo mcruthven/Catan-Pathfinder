@@ -1,4 +1,5 @@
-import unittest, random
+import unittest
+from random import shuffle
 from Vertex import Vertex
 from Hexagon import Hexagon
 
@@ -35,6 +36,17 @@ RELATIONS = [
     (4,2,5,1)
 ]
 
+RESOURCES = {
+    "wood": .2222,
+    "sheep": .2222,
+    "wheat": .2222,
+    "brick": .166666,
+    "stone": .166666
+}
+
+LOW_PROBABILITY = 0.05555555555
+HIGH_PROBABILITY = 2 * LOW_PROBABILITY
+
 """
 Board Builder Class
 Generates a dictionary of Resources (Hexagons) and a dictionary of vertices
@@ -43,75 +55,22 @@ class Board():
     def __init__(self, num_rings = 3):
         self.hexagons = dict()
         self.vertices = dict()
+
         self.build(num_rings)
 
     """
     Building the Board
     """
-    def build(self,num_rings):
+    def build(self, num_rings):
         start = Hexagon(pos = (0,0))
         self.hexagons[(0,0)] = start 
         self.buildRing(start, num_rings)
+
+        self.num_hexagons = len(self.hexagons)
+        self.num_vertices = len(self.vertices)
+
         self.buildVertexRelations()
-
-        materials, resourceValues = self.makeMaterialsArray(num_rings)
-        random.shuffle(materials)
-        random.shuffle(resourceValues)
-        for i in self.hexagons:
-            self.hexagons[i].resource = materials.pop()
-            if self.hexagons[i].resource != "desert":
-                self.hexagons[i].value = resourceValues.pop()
-            else:
-                self.hexagons[i].value = 7
-
-        return self.hexagons
-
-    def calc_resources_from_rings(self, num_rings):
-        """
-        Calculate number of resources from number of rings
-        Rings are number of rings from the center of the board
-        """
-        # non positive number of rings - returns 0 resources
-        if num_rings <= 0:
-            return 0
-        if num_rings == 1:
-            return 7
-        
-        return 1 + 3 * num_rings * (num_rings + 1)
-
-    def makeMaterialsArray(self,num_rings):
-        manyResources = ["wood", "sheep", "wheat"]
-        fewResources = ["brick","stone"]
-        materials = []
-        desertValue = 0
-
-        if num_rings <= 2:
-            materials.append("desert")
-            desertValue = desertValue + 1
-        else:
-            for i in range(num_rings-1):
-                materials.append("desert")
-                desertValue = desertValue + 1
-        for resource in manyResources:
-            for i in range((self.calc_resources_from_rings(num_rings)-desertValue)/5+1):
-                materials.append(resource)
-        for resource in fewResources:
-            for i in range((self.calc_resources_from_rings(num_rings)-desertValue)/5):
-                materials.append(resource)
-        
-        manyNumbers = range(3,12)
-        manyNumbers = [x for x in manyNumbers if x != 7]
-        fewNumbers = [2,12]
-        resourceValues = []
-
-        for val in manyNumbers:
-            for i in range((self.calc_resources_from_rings(num_rings)-desertValue)/11+1):
-                resourceValues.append(val)
-        for val in fewNumbers:    
-            for i in range((self.calc_resources_from_rings(num_rings)-desertValue)/11):
-                resourceValues.append(val)    
-
-        return materials, resourceValues
+        self.buildResources()
 
     def buildRing(self, r, depth):
         for i, vertex in enumerate(VERTICES):
@@ -137,8 +96,16 @@ class Board():
     def buildVertexRelations(self):
         map(self.get_vertex_ref, self.vertices.values())
 
+    def buildResources(self):
+        materials, values = self.get_resources()
+
+        for hexagon in self.hexagons.values():
+            hexagon.resource = materials.pop()
+            hexagon.value = 7 if hexagon.resource == "desert" else values.pop()
+
+
     """
-    Helpers for Navigation
+    Helpers
     """
     def get_vertex_ref(self, vertex):
         for i,j in enumerate(xrange(0, 6, 2)):
@@ -148,6 +115,28 @@ class Board():
             if vertex.h_refs[i] == None:
                 vertex.h_refs[i] = self.hexagons.get(pos[vertex.parity], None)
 
+    def get_resources(self):
+        # Get resources based on probability distribution specified in RESOURCES
+        resources = [key for key, value in RESOURCES.items() for _ in xrange(int(value * self.num_hexagons))]
+
+        # Count how many deserts necessary to fill in the hexagons
+        diff =  self.num_hexagons - len(resources)
+        if diff > 2: # JenkNote - we shouldn't have too many deserts. this limits it to 3 (diff is mod 5)
+            resources.extend(["brick", "stone"])
+            diff -= 2
+
+        # Add the deserts needed
+        resources.extend(["desert"] * diff)
+
+        # Fill in resources based on probabilities of high / low resource probabilities. Default is 2 ring board distribution
+        avail = (self.num_hexagons - diff)
+        resourceValues = [3, 4, 5, 6, 8, 9, 10, 11] * int(avail * HIGH_PROBABILITY) + [2, 12] * int(avail * LOW_PROBABILITY)
+        resourceValues.extend([2, 12, 3, 4, 5, 6, 8, 9, 10, 11][:self.num_hexagons - len(resourceValues) + 1])
+
+        shuffle(resources)
+        shuffle(resourceValues)
+
+        return resources, resourceValues
 
     """
     Helpers for printing
@@ -244,6 +233,46 @@ class TestGame(unittest.TestCase):
         self.assertEqual(testVertex.h_refs[0], self.ring3.hexagons[VERTICES[0][0] + VERTICES[1][0], VERTICES[0][1] + VERTICES[1][1]])
         self.assertEqual(testVertex.h_refs[1], self.ring3.hexagons[VERTICES[1][0] + VERTICES[2][0], VERTICES[1][1] + VERTICES[2][1]])
         self.assertEqual(testVertex.h_refs[2], self.ring3.hexagons[(0,0)])
+
+    def test_resource_arrays(self):
+        """
+        The output of resource arrays - type and probabilities
+        """
+        resources, values = self.ring3.get_resources()
+
+        # Make sure there enough resources for hexagons
+        self.assertEqual(self.ring3.num_hexagons, len(resources))
+
+        r_results = {}
+        v_results = [0] * 11
+        v_results[0] += 1
+        v_results[-1] += 1
+
+        # Calculate Freq 
+        for resource in resources:
+            r_results[resource] = r_results.get(resource, 0) + 1
+        for value in values:
+            v_results[value - 2] += 1
+
+        # Handle deserts
+        deserts = r_results["desert"]
+        del(r_results["desert"])
+        del(v_results[5])
+
+        # Make sure there are enough values for hexagons
+        self.assertEqual(self.ring3.num_hexagons, len(values) + deserts)
+        # FIXME - Make new test after settling on a more structure algorithm
+        # self.assertEqual(max(v_results), min(v_results)) 
+        # self.assertEqual(max(r_results.values()), min(r_results.values()))
+
+    def test_hexagon_resources(self):
+        """
+        Make sure every hexagon has a resource and value
+        """
+
+        for hexagon in self.ring3.hexagons.values():
+            self.assertTrue(hexagon.value != None)
+            self.assertTrue(hexagon.resource != None)
 
 
 def TestGraphBoard(board):
