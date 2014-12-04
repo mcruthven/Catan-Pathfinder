@@ -29,6 +29,7 @@ class Display:
 
     def drawHexagon(self, hexagon):
         self._drawPolygon(MATERIALS_COLOR[hexagon.resource], *[v.pos for v in hexagon.vertices])
+        self._drawText(hexagon.pos,str(hexagon.value))
 
     def drawPath(self, *points):
         map(self._drawLine, zip(points, points[1:]))
@@ -57,6 +58,10 @@ class Display:
         _line = Line(self._makePoint(A), self._makePoint(B))
         _line.setArrow("last")
         _line.draw(self.window)
+
+    def _drawText(self, pos, value):
+        _text = Text(self._makePoint(pos),value)
+        _text.draw(self.window)
 
     def _makePoint(self, pos):
         return Point(self.w_offset + SCALE * pos[0], self.h_offset - SCALE * pos[1])

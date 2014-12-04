@@ -54,10 +54,15 @@ class Board():
         self.buildRing(start, num_rings)
         self.buildVertexRelations()
 
-        materials = self.makeMaterialsArray(num_rings)
+        materials, resourceValues = self.makeMaterialsArray(num_rings)
         random.shuffle(materials)
+        random.shuffle(resourceValues)
         for i in self.hexagons:
             self.hexagons[i].resource = materials.pop()
+            if self.hexagons[i].resource != "desert":
+                self.hexagons[i].value = resourceValues.pop()
+            else:
+                self.hexagons[i].value = 7
 
         return self.hexagons
 
@@ -79,6 +84,7 @@ class Board():
         fewResources = ["brick","stone"]
         materials = []
         desertValue = 0
+
         if num_rings <= 2:
             materials.append("desert")
             desertValue = desertValue + 1
@@ -92,7 +98,20 @@ class Board():
         for resource in fewResources:
             for i in range((self.calc_resources_from_rings(num_rings)-desertValue)/5):
                 materials.append(resource)
-        return materials
+
+        manyNumbers = range(3,12)
+        manyNumbers = [x for x in manyNumbers if x != 7]
+        fewNumbers = [2,12]
+        resourceValues = []
+
+        for val in manyNumbers:
+            for i in range((self.calc_resources_from_rings(num_rings)-desertValue)/11+1):
+                resourceValues.append(val)
+        for val in fewNumbers:    
+            for i in range((self.calc_resources_from_rings(num_rings)-desertValue)/11):
+                resourceValues.append(val)    
+
+        return materials, resourceValues
 
     def buildRing(self, r, depth):
         for i, vertex in enumerate(VERTICES):

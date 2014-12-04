@@ -3,10 +3,11 @@ Resource
 Hexagon plate on board that contains 6 edges and 6 verticies
 """
 class Hexagon():
-    def __init__(self, pos = (0,0), resource = "wood"):
+    def __init__(self, pos = (0,0), resource = "wood", value = ""):
         self.pos = pos
         self.vertices = [None] * 6
         self.resource = resource
+        self.value = value
 
     def printVertices(self):
         print "\n" + "\n".join(map(str, self.vertices))
