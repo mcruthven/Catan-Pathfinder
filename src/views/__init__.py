@@ -19,6 +19,7 @@ class Display:
 
         # Create the Window
         self.window = GraphWin(title, size[0], size[1], autoflush = False)
+        self.window.setBackground(color_rgb(96,172,226))
 
     """
     Drawing Functions
