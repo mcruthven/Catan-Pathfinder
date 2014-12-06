@@ -1,5 +1,6 @@
 from models import Board, Hexagon, Vertex
 from views import Display
+from evaluators import EvaluatorA
 
 
 def GameLoop():
@@ -7,6 +8,7 @@ def GameLoop():
 
 def DrawBoardTest():
     board = Board(4)
+    EvaluatorA().evaluateBoard(board)
 
     # Showing the Board
     display = Display()

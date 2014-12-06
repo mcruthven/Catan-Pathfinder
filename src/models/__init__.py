@@ -103,28 +103,6 @@ class Board():
             hexagon.resource = materials.pop()
             hexagon.value = 7 if hexagon.resource == "desert" else values.pop()
 
-        for vertex in self.vertices.values():
-            hexResources = []
-            hexValues = 0
-            for hexRef in vertex.h_refs:
-                if hexRef != None:
-                    hexResources.append(hexRef.resource)
-                    if hexRef.resource != "desert":
-                        hexValues = hexValues + abs(7 - hexRef.value)
-                    else: 
-                        hexValues = hexValues + 7
-                else:
-                    hexValues = hexValues + 7
-
-            hexResWeight = len(set(hexResources))
-            hexValWeight = hexValues
-            vertex.weight = hexResWeight * hexValWeight
-
-            #deserts and edge = 7
-            #everything else abs(7-resourcenum)
-            #multiply by 3 for one resource, by 2 for 2, by 1 for 3
-
-
     """
     Helpers
     """
@@ -312,11 +290,14 @@ def TestGraphBoard(board):
     plt.plot(x1,y1, 'bo')
     plt.show()
 
+def runTests():
+    unittest.main()
+
 if __name__ == "__main__":
      #Importing here to avoid importing when not testing
     # import matplotlib.pyplot as plt
 
-    unittest.main()
+    runTests()
 
     # board = Board(3)
     # TestGraphBoard(board)
