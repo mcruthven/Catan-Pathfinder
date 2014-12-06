@@ -27,8 +27,8 @@ def dijkstra(G, source):
     u = min_dist[0]
     unvisited_nodes.remove(u) # remove the node you picked from unvisited_nodes
     
-    for v, dv in u.neighbors:
-      alt = dist[u] + dv
+    for v in u.neighbors:
+      alt = dist[u] + v.weight
       # update dist of the neighbor if this is a closer route
       if alt < dist[v]:       
         dist[v] = alt
