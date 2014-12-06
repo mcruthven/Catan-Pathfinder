@@ -1,7 +1,6 @@
 import unittest
 from dijkstra import dijkstra, find_path
 
-# This isnt finished
 class node(object):
     def __init__(self, name=None, weight=1, neighbors=None):
         self.name = name
@@ -15,7 +14,7 @@ class node(object):
         for neighbor in neighbors:
             self.v_refs.append(neighbor)
 
-class TestGame(unittest.TestCase):
+class TestDijkstra(unittest.TestCase):
 
     def setUp(self):
         self.a = node('a')
