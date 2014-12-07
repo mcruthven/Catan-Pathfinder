@@ -137,6 +137,17 @@ class Board():
 
         return resources, resourceValues
 
+    def get_vertex_from_position(self, pos):
+        diffx = (pos[0] / .5)
+        diffy = (pos[1] / ROOT3_2)
+
+        lowerX = int(diffx)
+        lowerY = int(diffy)
+
+        x = lowerX if abs(diffx - lowerX) <= .5 else lowerX + 1
+        y = lowerY if abs(diffy - lowerY) <= .5 else lowerY + 1
+
+        return self.vertices.get((x * .5, y * ROOT3_2))
     """
     Helpers for printing
     """
@@ -272,6 +283,21 @@ class TestGame(unittest.TestCase):
         for hexagon in self.ring3.hexagons.values():
             self.assertTrue(hexagon.value != None)
             self.assertTrue(hexagon.resource != None)
+
+    def test_vertex_from_clicked_position(self):
+        testVertex = self.ring3.vertices.values()[0]
+        x = testVertex.pos[0]
+        y = testVertex.pos[1]
+
+        vertex0 = self.ring3.get_vertex_from_position((x + .2, y - .25))
+        vertex1 = self.ring3.get_vertex_from_position((x - .2, y - .25))
+        vertex2 = self.ring3.get_vertex_from_position((x + .2, y + .25))
+        vertex3 = self.ring3.get_vertex_from_position((x - .2, y + .25))
+
+        self.assertEqual(testVertex, vertex0)
+        self.assertEqual(testVertex, vertex1)
+        self.assertEqual(testVertex, vertex2)
+        self.assertEqual(testVertex, vertex3)
 
 
 def TestGraphBoard(board):

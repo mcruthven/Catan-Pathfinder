@@ -1,6 +1,6 @@
 from graphics import *
 
-SCALE = 50
+SCALE = 50.0
 
 MATERIALS_COLOR = {"stone": "darkgrey",
                    "sheep": color_rgb(149,200,89),
@@ -36,6 +36,14 @@ class Display:
         self._drawCircle(hexagon.pos, 20, "white")
         self._drawText(hexagon.pos, str(hexagon.value))
 
+    def drawButton(self, text, pos1, pos2, color = "white", scale = False):
+        if scale:
+            pos1 = self._convertToNormal(pos1)
+            pos2 = self._convertToNormal(pos2)
+        return \
+        self._drawRectangle(pos1, pos2, color), \
+        self._drawText(((pos1[0] + pos2[0])/2.0, (pos1[1] + pos2[1])/2.0), text)
+
     def drawPath(self, *points):
         map(self._drawLine, zip(points, points[1:]))
 
@@ -45,8 +53,11 @@ class Display:
     def update(self):
         self.window.update()
 
+    def input(self):
+        return self.window.checkMouse()
+
     def wait(self):
-        self.window.getMouse()
+        return self.window.getMouse()
 
     def close(self):
         self.window.close()
@@ -58,24 +69,38 @@ class Display:
         _shape = Polygon(map(self._makePoint, points))
         _shape.setFill(color)
         _shape.draw(self.window)
+        return _shape
+
+    def _drawRectangle(self, pos1, pos2, color):
+        _rect = Rectangle(self._makePoint(pos1), self._makePoint(pos2))
+        _rect.setFill(color)
+        _rect.draw(self.window)
+        return _rect
 
     def _drawCircle(self, pos, rad, color):
         _circle = Circle(self._makePoint(pos), rad)
         _circle.setFill(color)
         _circle.draw(self.window)
+        return _circle
 
     def _drawLine(self, A, B):
         _line = Line(self._makePoint(A), self._makePoint(B))
         _line.setArrow("last")
         _line.draw(self.window)
+        return _line
 
     def _drawText(self, pos, value, size = 14):
         _text = Text(self._makePoint(pos),value)
         _text.setSize(size)
         _text.draw(self.window)
+        return _text
 
     def _makePoint(self, pos):
         return Point(self.w_offset + SCALE * pos[0], self.h_offset - SCALE * pos[1])
+
+    def _convertToNormal(self, pos):
+        return (pos[0] - self.w_offset) / SCALE, (- pos[1] + self.h_offset) / SCALE
+
 
 if __name__ == "__main__":
     display = Display()
