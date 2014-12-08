@@ -90,20 +90,6 @@ def GameLoop():
 
     display.close()
 
-def DrawBoardTest():
-    board = Board(4)
-    EV().evaluateBoard(board)
-
-    dijkstra.find_path(board.vertices.values(), start, stop)
-
-    # Showing the Board
-    display = Display()
-    display.drawBoard(board)
-    display.update()
-
-    display.wait()
-    display.close()
-
 if __name__ == "__main__":
     # DrawBoardTest()
 
