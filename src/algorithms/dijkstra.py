@@ -6,7 +6,7 @@ def dijkstra(G, source):
     """
     dist = {}
     dist[source] = 0
-    large_number = 1e4            # large number greater than any distance in the    tree
+    large_number = 1e4            # large number greater than any distance in the tree
     unvisited_nodes = set()
     previous = {}
     
