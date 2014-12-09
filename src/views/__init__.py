@@ -27,6 +27,8 @@ class Display:
     def drawBoard(self, board):
          for hexagon in board.hexagons.values():
             self.drawHexagon(hexagon)
+         for vertex in board.vertices.values():
+            self.drawWeight(vertex)
 
     def drawHexagon(self, hexagon):
         self._drawPolygon(MATERIALS_COLOR[hexagon.resource], *[v.pos for v in hexagon.vertices])
@@ -35,6 +37,9 @@ class Display:
     def drawResource(self, hexagon):
         self._drawCircle(hexagon.pos, 20, "white")
         self._drawText(hexagon.pos, str(hexagon.value))
+
+    def drawWeight(self, vertex):
+        self._drawText(vertex.pos, str(vertex.weight))
 
     def drawButton(self, text, pos1, pos2, color = "white", scale = False):
         if scale:
