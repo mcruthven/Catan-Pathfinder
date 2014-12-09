@@ -3,8 +3,6 @@ Vertex
 Where players build settlements / cities
 """
 
-from Empty import Empty
-
 class Vertex():
     def __init__(self, pos = (0,0), parity = False):
         """
