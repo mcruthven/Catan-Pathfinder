@@ -28,11 +28,12 @@ def dijkstra(G, source):
         unvisited_nodes.remove(u) # remove the node you picked from unvisited_nodes
         
         for v in u.v_refs:
-            alt = dist[u] + v.weight
-            # update dist of the neighbor if this is a closer route
-            if alt < dist[v]:             
-                dist[v] = alt
-                previous[v] = u
+            if v:
+                alt = dist[u] + v.weight
+                # update dist of the neighbor if this is a closer route
+                if alt < dist[v]:             
+                    dist[v] = alt
+                    previous[v] = u
     return dist, previous
  
 def find_path(G, source, target):

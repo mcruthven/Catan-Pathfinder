@@ -41,9 +41,9 @@ class TestDijkstra(unittest.TestCase):
         self.assertEqual([self.a, self.c, self.d, self.e], path)
 
     def test_path(self):
-        self.b.weight = 2
         self.a.add_neighbors([self.b, self.c]) 
         self.b.add_neighbors([self.e]) 
+        self.b.add_neighbors([None])
         self.c.add_neighbors([self.d]) 
         self.d.add_neighbors([self.e]) 
         path = find_path(self.G, self.a, self.e)
