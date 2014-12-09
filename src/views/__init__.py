@@ -25,10 +25,10 @@ class Display:
     Drawing Functions
     """
     def drawBoard(self, board):
-         for hexagon in board.hexagons.values():
+        for hexagon in board.hexagons.values():
             self.drawHexagon(hexagon)
-         for vertex in board.vertices.values():
-            self.drawWeight(vertex)
+        for vertex in board.vertices.values():
+            self._drawText(vertex.pos, vertex.weight)
 
     def drawHexagon(self, hexagon):
         self._drawPolygon(MATERIALS_COLOR[hexagon.resource], *[v.pos for v in hexagon.vertices])
@@ -41,6 +41,9 @@ class Display:
     def drawWeight(self, vertex):
         self._drawText(vertex.pos, str(vertex.weight))
 
+    def drawDistance(self, vertex):
+        self._drawText(vertex.pos, str(vertex.distance))
+
     def drawButton(self, text, pos1, pos2, color = "white", scale = False):
         if scale:
             pos1 = self._convertToNormal(pos1)
@@ -50,7 +53,7 @@ class Display:
         self._drawText(((pos1[0] + pos2[0])/2.0, (pos1[1] + pos2[1])/2.0), text)
 
     def drawPath(self, *points):
-        map(self._drawLine, zip(points, points[1:]))
+        return map(self._drawLine, zip(points, points[1:]))
 
     """
     Lifecycle Functions
@@ -88,9 +91,11 @@ class Display:
         _circle.draw(self.window)
         return _circle
 
-    def _drawLine(self, A, B):
-        _line = Line(self._makePoint(A), self._makePoint(B))
+    def _drawLine(self, A, size = 5, color = "white"):
+        _line = Line(self._makePoint(A[0]), self._makePoint(A[1]))
         _line.setArrow("last")
+        _line.setFill(color)
+        _line.setWidth(size)
         _line.draw(self.window)
         return _line
 

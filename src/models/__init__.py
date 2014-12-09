@@ -108,9 +108,12 @@ class Board():
     """
     def get_vertex_ref(self, vertex):
         for i,j in enumerate(xrange(0, 6, 2)):
-            pos = (vertex.pos[0] + VERTICES[j][0], vertex.pos[1] + VERTICES[j][1]), (vertex.pos[0] + VERTICES[j + 1][0], vertex.pos[1] + VERTICES[j + 1][1])
+            pos = (round(vertex.pos[0] + VERTICES[j][0], 3), round(vertex.pos[1] + VERTICES[j][1], 3)), \
+                (round(vertex.pos[0] + VERTICES[j + 1][0], 3), round(vertex.pos[1] + VERTICES[j + 1][1] ,3))
+            
             if vertex.v_refs[i] == None:
                 vertex.v_refs[i] = self.vertices.get(pos[1 - vertex.parity], None)
+
             if vertex.h_refs[i] == None:
                 vertex.h_refs[i] = self.hexagons.get(pos[vertex.parity], None)
 
@@ -298,6 +301,8 @@ class TestGame(unittest.TestCase):
         self.assertEqual(testVertex, vertex1)
         self.assertEqual(testVertex, vertex2)
         self.assertEqual(testVertex, vertex3)
+
+
 
 
 def TestGraphBoard(board):

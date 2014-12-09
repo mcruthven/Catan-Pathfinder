@@ -29,6 +29,8 @@ def dijkstra(G, source):
         
         for v in u.v_refs:
             if v:
+                if v.weight == 0:
+                    v.weight = 1000
                 alt = dist[u] + v.weight
                 # update dist of the neighbor if this is a closer route
                 if alt < dist[v]:             
@@ -49,6 +51,7 @@ def find_path(G, source, target):
     while previous[u]:
         u = previous[u]
         path.append(u)
+    print [str(v) for v in path]
     if path[-1] != source:
         raise ValueError('%s does not equal the expected start node, %s' 
                          % (path[-1], source))

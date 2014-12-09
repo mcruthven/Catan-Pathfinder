@@ -25,6 +25,7 @@ class Controller:
 
         # Whether or not to recalculate the path
         self.changed = False
+        self.pathLines = []
 
     def drawButtons(self, *args):
         self.buttons = []
@@ -62,8 +63,22 @@ class Controller:
 
         # Check to see if we need to redraw the path
         if self.changed and self.start and self.end:
-            self.find_path(self.board.vertices.values(), self.start, self.end)
+            path = self.find_path(self.board.vertices.values(), self.start, self.end)
+            
+            # self.clearPath()
+            self.pathLines = self.display.drawPath(*[v.pos for v in path])
+            self.display.update()
+            
+            self.start = None
+            self.end = None
+            self.end_circle.undraw()
+            self.start_circle.undraw()
+            
             changed = False
+
+    def clearPath(self):
+        for edge in self.pathLines:
+            edge.undraw()
 
     def clickedInBounds(self, point, bounds):
         return bounds[0] < point.getX() < bounds[2] and bounds[1] < point.getY() < bounds[3]
