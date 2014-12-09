@@ -29,8 +29,6 @@ def dijkstra(G, source):
         
         for v in u.v_refs:
             if v:
-                if v.weight == 0:
-                    v.weight = 1000
                 alt = dist[u] + v.weight
                 # update dist of the neighbor if this is a closer route
                 if alt < dist[v]:             
