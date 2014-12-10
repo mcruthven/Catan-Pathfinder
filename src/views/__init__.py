@@ -1,6 +1,6 @@
 from graphics import *
 
-SCALE = 50.0
+SCALE = 70.0
 
 MATERIALS_COLOR = {"stone": "darkgrey",
                    "sheep": color_rgb(149,200,89),
@@ -28,7 +28,7 @@ class Display:
         for hexagon in board.hexagons.values():
             self.drawHexagon(hexagon)
         for vertex in board.vertices.values():
-            self._drawText(vertex.pos, vertex.weight)
+            self.drawWeight(vertex)
 
     def drawHexagon(self, hexagon):
         self._drawPolygon(MATERIALS_COLOR[hexagon.resource], *[v.pos for v in hexagon.vertices])
@@ -39,6 +39,7 @@ class Display:
         self._drawText(hexagon.pos, str(hexagon.value))
 
     def drawWeight(self, vertex):
+        self._drawRectangle((vertex.pos[0] - .2, vertex.pos[1] - .2), (vertex.pos[0] + .2, vertex.pos[1] + .2), color = "white")
         self._drawText(vertex.pos, str(vertex.weight))
 
     def drawDistance(self, vertex):
@@ -91,7 +92,7 @@ class Display:
         _circle.draw(self.window)
         return _circle
 
-    def _drawLine(self, A, size = 5, color = "white"):
+    def _drawLine(self, A, size = 5, color = "black"):
         _line = Line(self._makePoint(A[0]), self._makePoint(A[1]))
         _line.setArrow("last")
         _line.setFill(color)

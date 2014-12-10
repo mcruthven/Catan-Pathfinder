@@ -89,7 +89,7 @@ def GameLoop():
     END_BUTTON = (20, 100, 120, 150, "Ending Node")
 
     # Create the board
-    board = Board(3)
+    board = Board(2)
     EV().evaluateBoard(board)
 
     # Show the initial board

@@ -49,7 +49,7 @@ def find_path(G, source, target):
     while previous[u]:
         u = previous[u]
         path.append(u)
-    print [str(v) for v in path]
+
     if path[-1] != source:
         raise ValueError('%s does not equal the expected start node, %s' 
                          % (path[-1], source))

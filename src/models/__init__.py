@@ -168,6 +168,9 @@ class TestGame(unittest.TestCase):
         self.ring3 = Board(3)
         self.ring4 = Board(4)
 
+        self.rings = [self.ring0, self.ring1, self.ring2, self.ring3, self.ring4]
+
+
     def test_building_function(self):
         """
         Test number of vertices and hexagons as a result of board building
@@ -183,6 +186,15 @@ class TestGame(unittest.TestCase):
         self.assertEqual(len(self.ring2.vertices), 54)
         self.assertEqual(len(self.ring3.vertices), 96)
         self.assertEqual(len(self.ring4.vertices), 150)
+
+    def test_vertex_refs(self):
+        """
+        Tests for all rings if there are the right number of vertices with only 2 references
+        """
+        self.assertEqual(len([1 for x in self.ring0.vertices.values() if len([z for z in x.v_refs if z]) == 2]), self.ring0.num_vertices)
+        for i in xrange(len(self.rings) - 1):
+            self.assertEqual(len([1 for x in self.rings[i + 1].vertices.values() if len([z for z in x.v_refs if z]) == 2]), self.rings[i + 1].num_vertices - self.rings[i].num_vertices - self.rings[i + 1].num_hexagons + self.rings[i].num_hexagons)
+        
 
     def test_vertex_ref_builder(self):
         """
@@ -274,9 +286,6 @@ class TestGame(unittest.TestCase):
 
         # Make sure there are enough values for hexagons
         self.assertEqual(self.ring3.num_hexagons, len(values) + deserts)
-        # FIXME - Make new test after settling on a more structure algorithm
-        # self.assertEqual(max(v_results), min(v_results)) 
-        # self.assertEqual(max(r_results.values()), min(r_results.values()))
 
     def test_hexagon_resources(self):
         """
@@ -321,14 +330,11 @@ def TestGraphBoard(board):
     plt.plot(x1,y1, 'bo')
     plt.show()
 
-def runTests():
-    unittest.main()
-
 if __name__ == "__main__":
      #Importing here to avoid importing when not testing
     # import matplotlib.pyplot as plt
 
-    runTests()
+    unittest.main()
 
     # board = Board(3)
     # TestGraphBoard(board)
