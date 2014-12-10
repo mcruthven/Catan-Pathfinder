@@ -26,6 +26,7 @@ VERTICES = [
     (-1, 0),
     (-.5, ROOT3_2)
 ]
+
 # Relations for vertices across hexagons
 RELATIONS = [
     (0,2,5,3),
@@ -52,9 +53,11 @@ Board Builder Class
 Generates a dictionary of Resources (Hexagons) and a dictionary of vertices
 """
 class Board():
-    def __init__(self, num_rings = 3):
+    def __init__(self, num_rings = 3, settlement_depth = 3):
         self.hexagons = dict()
         self.vertices = dict()
+
+        self.settlement_depth = settlement_depth
 
         self.build(num_rings)
 
@@ -75,7 +78,7 @@ class Board():
     def buildRing(self, r, depth):
         for i, vertex in enumerate(VERTICES):
             if r.vertices[i] == None:
-                newPos = round(r.pos[0] + vertex[0], 3), round(r.pos[1] + vertex[1], 3)
+                newPos = self.add(r.pos, vertex)
                 newV = self.vertices.get(newPos, Vertex(pos = newPos, parity = (i % 2) == 0))
                 r.vertices[i] = newV
                 if newPos not in self.vertices:
@@ -85,7 +88,7 @@ class Board():
             return
 
         for i, hexagon in enumerate(HEXAGONS):
-            newPos = round(r.pos[0] + hexagon[0], 3), round(r.pos[1] + hexagon[1], 3)
+            newPos = self.add(r.pos, hexagon)
             newR = self.hexagons.get(newPos, Hexagon(pos = newPos))
             rel = RELATIONS[i]
             newR.vertices[rel[1]], newR.vertices[rel[3]] = r.vertices[rel[0]], r.vertices[rel[2]]
@@ -95,6 +98,7 @@ class Board():
 
     def buildVertexRelations(self):
         map(self.get_vertex_ref, self.vertices.values())
+        map(self.get_settlement_set, self.vertices.values())
 
     def buildResources(self):
         materials, values = self.get_resources()
@@ -108,14 +112,35 @@ class Board():
     """
     def get_vertex_ref(self, vertex):
         for i,j in enumerate(xrange(0, 6, 2)):
-            pos = (round(vertex.pos[0] + VERTICES[j][0], 3), round(vertex.pos[1] + VERTICES[j][1], 3)), \
-                (round(vertex.pos[0] + VERTICES[j + 1][0], 3), round(vertex.pos[1] + VERTICES[j + 1][1] ,3))
+            pos = self.add(vertex.pos, VERTICES[j]), self.add(vertex.pos, VERTICES[j + 1])
             
             if vertex.v_refs[i] == None:
                 vertex.v_refs[i] = self.vertices.get(pos[1 - vertex.parity], None)
 
             if vertex.h_refs[i] == None:
                 vertex.h_refs[i] = self.hexagons.get(pos[vertex.parity], None)
+
+    def get_settlement_set(self, vertex):
+        vertex.settlement_refs = set()
+        for x in xrange(1 - vertex.parity, 6, 2):
+            self._settlement_recursion(self.add(vertex.pos, VERTICES[x]),\
+                                         x, 1 - vertex.parity,
+                                         vertex.settlement_refs, 
+                                         self.settlement_depth - 1)
+
+
+    def _settlement_recursion(self, pos, curIndex, curParity, settle, depth):
+        _not = (curIndex + 3) % 6
+        for x in xrange(1 - curParity, 6, 2):
+            if x != _not:
+                newPos = self.add(pos, VERTICES[x])
+                refV = self.vertices.get(newPos, None)
+                if refV:
+                    settle.add(refV)
+                    if depth > 1:
+                        self._settlement_recursion(newPos, x, 1 - curParity, settle, depth - 1)
+
+
 
     def get_resources(self):
         # Get resources based on probability distribution specified in RESOURCES
@@ -150,12 +175,16 @@ class Board():
         x = lowerX if abs(diffx - lowerX) <= .5 else lowerX + 1
         y = lowerY if abs(diffy - lowerY) <= .5 else lowerY + 1
 
-        return self.vertices.get((x * .5, y * ROOT3_2))
+        return self.vertices.get((round(x * .5, 3), round(y * ROOT3_2, 3)))
+
     """
-    Helpers for printing
+    Helpers for helping
     """
     def print_vertices(self):
         print sorted([vertex.pos for vertex in self.vertices.values()])
+
+    def add(self, a, b):
+        return round(a[0] + b[0], 3), round(a[1] + b[1], 3)
 
 """ 
 Testing
@@ -194,7 +223,7 @@ class TestGame(unittest.TestCase):
         self.assertEqual(len([1 for x in self.ring0.vertices.values() if len([z for z in x.v_refs if z]) == 2]), self.ring0.num_vertices)
         for i in xrange(len(self.rings) - 1):
             self.assertEqual(len([1 for x in self.rings[i + 1].vertices.values() if len([z for z in x.v_refs if z]) == 2]), self.rings[i + 1].num_vertices - self.rings[i].num_vertices - self.rings[i + 1].num_hexagons + self.rings[i].num_hexagons)
-        
+
 
     def test_vertex_ref_builder(self):
         """
@@ -293,8 +322,8 @@ class TestGame(unittest.TestCase):
         """
 
         for hexagon in self.ring3.hexagons.values():
-            self.assertTrue(hexagon.value != None)
-            self.assertTrue(hexagon.resource != None)
+            self.assertTrue(hexagon.value is not None)
+            self.assertTrue(hexagon.resource is not None)
 
     def test_vertex_from_clicked_position(self):
         testVertex = self.ring3.vertices.values()[0]
@@ -311,8 +340,9 @@ class TestGame(unittest.TestCase):
         self.assertEqual(testVertex, vertex2)
         self.assertEqual(testVertex, vertex3)
 
-
-
+    def test_vertex_settlement_set(self):
+        testVertex = self.ring3.vertices.values()[0]
+        self.assertEqual(len(testVertex.settlement_refs), 9)
 
 def TestGraphBoard(board):
     x = []
@@ -326,12 +356,12 @@ def TestGraphBoard(board):
             x1.append(vertex.pos[0])
             y1.append(vertex.pos[1])
 
-    plt.plot(x,y, 'ro')
-    plt.plot(x1,y1, 'bo')
+    plt.plot(x, y, 'ro')
+    plt.plot(x1, y1, 'bo')
     plt.show()
 
 if __name__ == "__main__":
-     #Importing here to avoid importing when not testing
+    # Importing here to avoid importing when not testing
     # import matplotlib.pyplot as plt
 
     unittest.main()
