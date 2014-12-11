@@ -4,10 +4,10 @@ from evaluators import EvaluatorA as EV
 from algorithms import dijkstra
 
 class Controller:
-    def __init__(self, display, board, find_path):
+    def __init__(self, display, board, algorithm):
         self.display = display
         self.board = board
-        self.find_path = find_path
+        self.algorithm = algorithm()
 
         self.initMembers()
 
@@ -53,7 +53,7 @@ class Controller:
                     self.start_circle = self.display._drawCircle(self.start.pos, 20, "red")
                     self.changed = True
                     self.action = None
-                
+
             if self.action == "end":
                 self.end = self.board.get_vertex_from_position(self.display._convertToNormal((clicked.getX(), clicked.getY())))
                 if self.end != None:
@@ -63,17 +63,17 @@ class Controller:
 
         # Check to see if we need to redraw the path
         if self.changed and self.start and self.end:
-            path = self.find_path(self.board.vertices.values(), self.start, self.end)
-            
+            path = self.algorithm.find_path(self.board.vertices.values(), self.start, self.end)
+
             # self.clearPath()
             self.pathLines = self.display.drawPath(*[v.pos for v in path])
             self.display.update()
-            
+
             self.start = None
             self.end = None
             self.end_circle.undraw()
             self.start_circle.undraw()
-            
+
             changed = False
 
     def clearPath(self):
@@ -96,9 +96,9 @@ def GameLoop():
     display = Display()
 
     # Controller Initialization
-    controller = Controller(display, board, dijkstra.find_path)
+    controller = Controller(display, board, dijkstra.DijkstraAlgorithm)
     controller.drawButtons(START_BUTTON, END_BUTTON)
-    
+
     while True:
         controller.handleClick()
         display.update()

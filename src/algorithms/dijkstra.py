@@ -1,15 +1,11 @@
 class DijkstraAlgorithm(object):
 
-    def __init__(self, G, source, target):
-        """Find all paths to source
-        Inputs:
-            G - a list containing all nodes in the graph
-            source - the source node
-        """
+    def __init__(self):
         self.large_number = 1e4            # large number greater than any distance in the tree
         self.minimum = 0
-        self.reset(G, source, target)
-        self.dijkstra()
+        self.G = None
+        self.source = None
+        self.target = None
 
     def reset(self, G, source, target):
         self.G = G
@@ -79,16 +75,10 @@ class DijkstraAlgorithm(object):
 
 class DijkstraResourceAlgorithm(DijkstraAlgorithm):
 
-    def __init__(self, G, source, target):
-        """Find all paths to source
-        Inputs:
-            G - a list containing all nodes in the graph
-            source - the source node
-        """
+    def __init__(self):
+        DijkstraAlgorithm.__init__(self)
         self.large_number = [1e4, 1e4, 1e4, 1e4]            # large number greater than any distance in the tree
         self.minimum = [0, 0, 0, 0]
-        self.reset(G, source, target)
-        self.dijkstra()
 
     @staticmethod
     def compare(x, y):
