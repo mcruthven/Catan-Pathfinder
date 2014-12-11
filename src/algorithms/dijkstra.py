@@ -10,7 +10,7 @@ class DijkstraAlgorithm(object):
         self.minimum = 0
         self.reset(G, source, target)
         self.dijkstra()
-    
+
     def reset(self, G, source, target):
         self.G = G
         self.source = source
@@ -18,13 +18,13 @@ class DijkstraAlgorithm(object):
         self.dist = {}
         self.dist[source] = self.minimum
         self.previous = {}
-        
-        # build distance and previous node dictionaries    
+
+        # build distance and previous node dictionaries
         for v in self.G:
             if v != self.source:
-                self.dist[v] = self.large_number    
+                self.dist[v] = self.large_number
             self.previous[v] = None
-        
+
     def dijkstra(self):
         unvisited_nodes = set(self.G)
 
@@ -37,15 +37,15 @@ class DijkstraAlgorithm(object):
                     min_dist = [n, self.dist[n]]
             u = min_dist[0]
             unvisited_nodes.remove(u) # remove the node you picked from unvisited_nodes
-            
+
             for v in u.v_refs:
                 if v:
                     alt = self.update_distance(self.dist[u], v)
                     # update dist of the neighbor if this is a closer route
-                    if self.compare(alt, self.dist[v]):             
+                    if self.compare(alt, self.dist[v]):
                         self.dist[v] = alt
                         self.previous[v] = u
-     
+
     def find_path(self, G, source, target):
         """Return the path to target from the source node
         Inputs:
@@ -65,7 +65,7 @@ class DijkstraAlgorithm(object):
             u = self.previous[u]
             path.append(u)
         if path[-1] != self.source:
-            raise ValueError('%s does not equal the expected start node, %s' 
+            raise ValueError('%s does not equal the expected start node, %s'
                              % (path[-1], self.source))
         return path[::-1]
 
@@ -89,7 +89,7 @@ class DijkstraResourceAlgorithm(DijkstraAlgorithm):
         self.minimum = [0, 0, 0, 0]
         self.reset(G, source, target)
         self.dijkstra()
- 
+
     @staticmethod
     def compare(x, y):
         return sum([v **2 for v in x]) <= sum([v**2 for v in y])
@@ -97,5 +97,3 @@ class DijkstraResourceAlgorithm(DijkstraAlgorithm):
     @staticmethod
     def update_distance(x, v):
         return [res_val + v.resources[i] for i, res_val in enumerate(x)]
-
- 

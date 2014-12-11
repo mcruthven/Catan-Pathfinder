@@ -9,7 +9,7 @@ class Vertex():
         pos - coordinate points of the vertex
         """
         self.pos = pos
-        self.parity = parity
+        self.parity = parity # even is true
         self.v_refs = [None] * 3
         self.h_refs = [None] * 3
         self.weight = None

@@ -11,6 +11,7 @@ class EvaluatorA(Evaluator):
 
         for hexRef in vertex.h_refs:
             if hexRef == None:
+                hexValues += 7
                 continue
             hexResources.add(hexRef.resource)
             hexValues += int(hexRef)
