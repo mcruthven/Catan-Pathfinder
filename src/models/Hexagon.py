@@ -2,7 +2,6 @@
 Resource 
 Hexagon plate on board that contains 6 edges and 6 verticies
 """
-from Empty import Empty
 
 class Hexagon():
     def __init__(self, pos = (0,0), resource = None, value = None):
