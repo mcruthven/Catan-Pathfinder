@@ -93,7 +93,7 @@ class DijkstraResourceAlgorithm(DijkstraAlgorithm):
     def update_distance(x, v):
         return [res_val + v.resources[i] for i, res_val in enumerate(x)]
 
-class DijkstraSettlementAlgorith(DijkstraAlgorithm):
+class DijkstraSettlementAlgorithm(DijkstraAlgorithm):
     @staticmethod
     def get_refs(v):
         return v.s_refs
