@@ -121,11 +121,11 @@ class Board():
                 vertex.h_refs[i] = self.hexagons.get(pos[vertex.parity], None)
 
     def get_settlement_set(self, vertex):
-        vertex.settlement_refs = set()
+        vertex.s_refs = set()
         for x in xrange(1 - vertex.parity, 6, 2):
             self._settlement_recursion(self.add(vertex.pos, VERTICES[x]),\
                                          x, 1 - vertex.parity,
-                                         vertex.settlement_refs, 
+                                         vertex.s_refs, 
                                          self.settlement_depth - 1)
 
 
@@ -342,7 +342,7 @@ class TestGame(unittest.TestCase):
 
     def test_vertex_settlement_set(self):
         testVertex = self.ring3.vertices.values()[0]
-        self.assertEqual(len(testVertex.settlement_refs), 9)
+        self.assertEqual(len(testVertex.s_refs), 9)
 
 def TestGraphBoard(board):
     x = []

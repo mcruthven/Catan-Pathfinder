@@ -2,6 +2,7 @@ from models import Board, Hexagon, Vertex
 from views import Display
 from evaluators import EvaluatorA as EV
 from algorithms import dijkstra
+import sys
 
 class Controller:
     def __init__(self, display, board, algorithm):
@@ -51,8 +52,9 @@ class Controller:
                 self.start = self.board.get_vertex_from_position(self.display._convertToNormal((clicked.getX(), clicked.getY())))
                 if self.start != None:
                     self.start_circle = self.display._drawCircle(self.start.pos, 20, "red")
-                    for vertex in self.start.s_refs:
-                        self.display._drawCircle(vertex.pos, 20, "white")
+                    if len(sys.argv) > 1:
+                        for vertex in self.start.s_refs:
+                            self.display._drawCircle(vertex.pos, 20, "white")
                     self.changed = True
                     self.action = None
 
