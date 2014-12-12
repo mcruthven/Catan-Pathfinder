@@ -34,13 +34,18 @@ class DijkstraAlgorithm(object):
             u = min_dist[0]
             unvisited_nodes.remove(u) # remove the node you picked from unvisited_nodes
 
-            for v in u.v_refs:
+            v_refs = self.get_refs(u)
+            for v in v_refs:
                 if v:
                     alt = self.update_distance(self.dist[u], v)
                     # update dist of the neighbor if this is a closer route
                     if self.compare(alt, self.dist[v]):
                         self.dist[v] = alt
                         self.previous[v] = u
+
+    @staticmethod
+    def get_refs(v):
+        return v.v_refs
 
     def find_path(self, G, source, target):
         """Return the path to target from the source node
@@ -87,3 +92,8 @@ class DijkstraResourceAlgorithm(DijkstraAlgorithm):
     @staticmethod
     def update_distance(x, v):
         return [res_val + v.resources[i] for i, res_val in enumerate(x)]
+
+class DijkstraSettlementAlgorithm(DijkstraAlgorithm):
+    @staticmethod
+    def get_refs(v):
+        return v.s_refs
