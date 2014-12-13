@@ -107,6 +107,14 @@ class Board():
             hexagon.resource = materials.pop()
             hexagon.value = 7 if hexagon.resource == "desert" else values.pop()
 
+        for vertex in self.vertices.values():
+            order = {"wood": 0, "wheat": 1, "sheep": 2, "brick": 3, "stone": 4, "desert": 5}
+            for hexagon in vertex.h_refs:
+                if hexagon != None: 
+                    vertex.resources[order[hexagon.resource]] += 1
+                else: 
+                    vertex.resources[5] += 1
+
     """
     Helpers
     """
