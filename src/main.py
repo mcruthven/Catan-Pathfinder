@@ -27,6 +27,7 @@ class Controller:
         # Whether or not to recalculate the path
         self.changed = False
         self.pathLines = []
+        self.settleCircles = []
 
     def drawButtons(self, *args):
         self.buttons = []
@@ -70,7 +71,7 @@ class Controller:
         if self.changed and self.start and self.end:
             path, s_path = self.algorithm.find_path(self.board.vertices.values(), self.start, self.end)
 
-            # self.clearPath()
+            self.clearPath()
             self.settleCircles = [self.display._drawCircle(v.pos, 20, "red") for v in s_path]
             self.pathLines = self.display.drawPath(*[v.pos for v in path])
             self.display.update()

@@ -182,8 +182,10 @@ class Board():
         lowerX = int(diffx)
         lowerY = int(diffy)
 
-        x = lowerX if abs(diffx - lowerX) <= .5 else lowerX + 1
-        y = lowerY if abs(diffy - lowerY) <= .5 else lowerY + 1
+        x = lowerX if abs(diffx - lowerX) <= .5 else lowerX + 2 * (lowerX >= 0) - 1
+        y = lowerY if abs(diffy - lowerY) <= .5 else lowerY + 2 * (lowerY >= 0) - 1
+        # x = round(lowerX , 0)
+        # y = round(lowerY , 0)
 
         return self.vertices.get((round(x * .5, 3), round(y * ROOT3_2, 3)))
 
