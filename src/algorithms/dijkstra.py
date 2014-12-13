@@ -104,3 +104,28 @@ class DijkstraSettlementAlgorithm(DijkstraAlgorithm):
     @staticmethod
     def get_refs(v):
         return v.s_refs
+
+    def find_path(self, G, source, target):
+        """Return the path to target from the source node
+        Inputs:
+            G - a list containing all nodes in the graph
+            source - start node for the path
+            target - node to end at
+        """
+        if target != self.target:
+            self.target = target
+        if source != self.source or G != self.G:
+            self.reset(G, source, target)
+            self.dijkstra()
+
+        path = [self.target]
+        u = self.target
+        while self.previous[u]:
+            u = self.previous[u]
+            path.append(u)
+        if path[-1] != self.source:
+            raise ValueError('%s does not equal the expected start node, %s'
+                             % (path[-1], self.source))
+        path = path[::-1]
+        newPath = reduce(lambda x, y: x + y, [v1.s_refs[v2] for v1,v2 in zip(path, path[1:])])
+        return [source] + newPath, path

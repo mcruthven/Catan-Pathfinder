@@ -7,7 +7,7 @@ class node(object):
         self.name = name
         self.weight = weight
         self.v_refs = neighbors if neighbors else []
-        self.s_refs = s_refs if s_refs else []
+        self.s_refs = s_refs if s_refs else dict()
         self.resources = resources
     def __repr__(self):
         return self.name
@@ -24,8 +24,8 @@ class TestDijkstra(unittest.TestCase):
     def setUp(self):
         self.e = node('e')
         self.c = node('c')
-        self.b = node('b', neighbors=[self.e], s_refs=[self.e])
-        self.a = node('a', neighbors=[self.b, self.c], s_refs=[self.b])
+        self.b = node('b', neighbors=[self.e], s_refs={self.e: [self.e]})
+        self.a = node('a', neighbors=[self.b, self.c], s_refs={self.b: [self.b], self.e:[self.b, self.e]})
         self.d = node('d', neighbors=[self.e])
         self.c.add_neighbors([self.d])
         self.G = [self.a, self.b, self.c, self.d, self.e]
@@ -81,7 +81,15 @@ class TestDijkstra(unittest.TestCase):
    #
    #     #self.assertEqual([self.a, self.e], path)
 
+    def test_path_resource(self):
+        self.algorithm = DijkstraResourceAlgorithm()
+        path, s_path = self.algorithm.find_path(self.G, self.a, self.e)
+        self.assertEqual([self.a, self.b, self.e], path)
+    # TODO: make better resource tests
 
-
+    def test_path_resource(self):
+        self.algorithm = DijkstraSettlementAlgorithm()
+        path, s_path = self.algorithm.find_path(self.G, self.a, self.e)
+        self.assertEqual([self.a, self.b, self.e], path)
 if __name__ == "__main__":
     unittest.main()

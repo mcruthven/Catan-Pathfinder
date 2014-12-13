@@ -107,6 +107,14 @@ class Board():
             hexagon.resource = materials.pop()
             hexagon.value = 7 if hexagon.resource == "desert" else values.pop()
 
+        for vertex in self.vertices.values():
+            order = {"wood": 0, "wheat": 1, "sheep": 2, "brick": 3, "stone": 4, "desert": 5}
+            for hexagon in vertex.h_refs:
+                if hexagon != None: 
+                    vertex.resources[order[hexagon.resource]] += 1
+                else: 
+                    vertex.resources[5] += 1
+
     """
     Helpers
     """
@@ -121,24 +129,26 @@ class Board():
                 vertex.h_refs[i] = self.hexagons.get(pos[vertex.parity], None)
 
     def get_settlement_set(self, vertex):
-        vertex.s_refs = set()
+        vertex.s_refs = dict()
         for x in xrange(1 - vertex.parity, 6, 2):
-            self._settlement_recursion(self.add(vertex.pos, VERTICES[x]),\
-                                         x, 1 - vertex.parity,
-                                         vertex.s_refs, 
+            v = self.vertices.get(self.add(vertex.pos, VERTICES[x]), None)
+            if not v:
+                continue
+            self._settlement_recursion(x, 1 - vertex.parity,
+                                         vertex.s_refs, [v],
                                          self.settlement_depth - 1)
 
 
-    def _settlement_recursion(self, pos, curIndex, curParity, settle, depth):
+    def _settlement_recursion(self, curIndex, curParity, settle, path, depth):
         _not = (curIndex + 3) % 6
         for x in xrange(1 - curParity, 6, 2):
             if x != _not:
-                newPos = self.add(pos, VERTICES[x])
+                newPos = self.add(path[-1].pos, VERTICES[x])
                 refV = self.vertices.get(newPos, None)
                 if refV:
-                    settle.add(refV)
+                    settle[refV] = path + [refV]
                     if depth > 1:
-                        self._settlement_recursion(newPos, x, 1 - curParity, settle, depth - 1)
+                        self._settlement_recursion(x, 1 - curParity, settle, path + [refV], depth - 1)
 
 
 
@@ -172,8 +182,10 @@ class Board():
         lowerX = int(diffx)
         lowerY = int(diffy)
 
-        x = lowerX if abs(diffx - lowerX) <= .5 else lowerX + 1
-        y = lowerY if abs(diffy - lowerY) <= .5 else lowerY + 1
+        x = lowerX if abs(diffx - lowerX) <= .5 else lowerX + 2 * (lowerX >= 0) - 1
+        y = lowerY if abs(diffy - lowerY) <= .5 else lowerY + 2 * (lowerY >= 0) - 1
+        # x = round(lowerX , 0)
+        # y = round(lowerY , 0)
 
         return self.vertices.get((round(x * .5, 3), round(y * ROOT3_2, 3)))
 
@@ -222,7 +234,25 @@ class TestGame(unittest.TestCase):
         """
         self.assertEqual(len([1 for x in self.ring0.vertices.values() if len([z for z in x.v_refs if z]) == 2]), self.ring0.num_vertices)
         for i in xrange(len(self.rings) - 1):
-            self.assertEqual(len([1 for x in self.rings[i + 1].vertices.values() if len([z for z in x.v_refs if z]) == 2]), self.rings[i + 1].num_vertices - self.rings[i].num_vertices - self.rings[i + 1].num_hexagons + self.rings[i].num_hexagons)
+            calculated = self.rings[i + 1].num_vertices - self.rings[i].num_vertices - self.rings[i + 1].num_hexagons + self.rings[i].num_hexagons
+            only_two = [x for x in self.rings[i + 1].vertices.values() if len([z for z in x.v_refs if z]) == 2]
+            self.assertEqual(len(only_two), calculated)
+
+            # v_refs = [*x.v_refs for x in only_two]
+            # first = v_refs.pop()
+            # curr = first
+            # while True:
+            #     for v in curr.v_refs:
+            #         if v in v_refs:
+            #             curr = v
+            #             v_refs.remove(v)
+                        
+
+            #     if len(v_refs) == 0:
+            #         break
+
+
+
 
 
     def test_vertex_ref_builder(self):
@@ -343,6 +373,15 @@ class TestGame(unittest.TestCase):
     def test_vertex_settlement_set(self):
         testVertex = self.ring3.vertices.values()[0]
         self.assertEqual(len(testVertex.s_refs), 9)
+
+        # Check the paths to settlements are correct
+        for v, path in testVertex.s_refs.items():
+            self.assertEqual(v, path[-1])
+            ref = testVertex
+            for _v in path:
+                self.assertTrue(_v in ref.v_refs)
+                ref = _v
+            
 
 def TestGraphBoard(board):
     x = []

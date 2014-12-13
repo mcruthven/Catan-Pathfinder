@@ -13,6 +13,8 @@ class Vertex():
         self.v_refs = [None] * 3
         self.h_refs = [None] * 3
         self.weight = None
+        #order: wood, wheat, sheep, brick, stone, desert/none
+        self.resources = [0,0,0,0,0,0]
 
     def __str__(self):
         return "Vertex at " + str(self.pos)
