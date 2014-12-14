@@ -113,7 +113,7 @@ class Board():
                 if hexagon != None:
                     vertex.resources[order[hexagon.resource]] += hexagon.value
                 else:
-                    vertex.resources[5] += 7
+                    vertex.resources[5] += 14
 
     """
     Helpers
