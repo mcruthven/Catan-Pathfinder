@@ -1,7 +1,7 @@
 class DijkstraAlgorithm(object):
 
     def __init__(self):
-        self.large_number = 1e4            # large number greater than any distance in the tree
+        self.large_number = 1e4 # large number greater than any distance in the tree
         self.minimum = 0
         self.G = None
         self.source = None
@@ -18,7 +18,7 @@ class DijkstraAlgorithm(object):
         # build distance and previous node dictionaries
         for v in self.G:
             if v != self.source:
-                self.dist[v] = self.large_number
+                self.dist[v] = self.update_distance(self.large_number, self.source)
             self.previous[v] = None
 
     def dijkstra(self):
@@ -64,7 +64,7 @@ class DijkstraAlgorithm(object):
         if path[-1] != self.source:
             raise ValueError('%s does not equal the expected start node, %s'
                              % (path[-1], self.source))
-        return path[::-1]
+        return path[::-1], [self.source, self.target]
 
     @staticmethod
     def get_refs(v):
@@ -78,12 +78,13 @@ class DijkstraAlgorithm(object):
     def compare(x, y):
         return x <= y
 
+
 class DijkstraResourceAlgorithm(DijkstraAlgorithm):
 
     def __init__(self):
         DijkstraAlgorithm.__init__(self)
-        self.large_number = [1e4, 1e4, 1e4, 1e4] # large number greater than any distance in the tree
-        self.minimum = [0, 0, 0, 0]
+        self.large_number = [1e4, 1e4, 1e4, 1e4, 1e4, 1e4] # large number greater than any distance in the tree
+        self.minimum = [0, 0, 0, 0, 0, 0]
 
     @staticmethod
     def compare(x, y):
@@ -93,11 +94,6 @@ class DijkstraResourceAlgorithm(DijkstraAlgorithm):
     def update_distance(x, v):
         return [res_val + v.resources[i] for i, res_val in enumerate(x)]
 
-class DijkstraSettlementAlgorithm(DijkstraAlgorithm):
-
-    @staticmethod
-    def get_refs(v):
-        return v.s_refs
 
 class DijkstraSettlementAlgorithm(DijkstraAlgorithm):
 
@@ -129,3 +125,8 @@ class DijkstraSettlementAlgorithm(DijkstraAlgorithm):
         path = path[::-1]
         newPath = reduce(lambda x, y: x + y, [v1.s_refs[v2] for v1,v2 in zip(path, path[1:])])
         return [source] + newPath, path
+
+
+class DijkstraResourceSettlementAlgorithm(DijkstraSettlementAlgorithm, DijkstraResourceAlgorithm):
+    def __init__(self):
+        DijkstraResourceAlgorithm.__init__(self)
