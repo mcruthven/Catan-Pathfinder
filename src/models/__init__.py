@@ -66,7 +66,7 @@ class Board():
     """
     def build(self, num_rings):
         start = Hexagon(pos = (0,0))
-        self.hexagons[(0,0)] = start 
+        self.hexagons[(0,0)] = start
         self.buildRing(start, num_rings)
 
         self.num_hexagons = len(self.hexagons)
@@ -110,10 +110,10 @@ class Board():
         for vertex in self.vertices.values():
             order = {"wood": 0, "wheat": 1, "sheep": 2, "brick": 3, "stone": 4, "desert": 5}
             for hexagon in vertex.h_refs:
-                if hexagon != None: 
-                    vertex.resources[order[hexagon.resource]] += 1
-                else: 
-                    vertex.resources[5] += 1
+                if hexagon != None:
+                    vertex.resources[order[hexagon.resource]] += hexagon.value
+                else:
+                    vertex.resources[5] += 7
 
     """
     Helpers
@@ -121,7 +121,7 @@ class Board():
     def get_vertex_ref(self, vertex):
         for i,j in enumerate(xrange(0, 6, 2)):
             pos = self.add(vertex.pos, VERTICES[j]), self.add(vertex.pos, VERTICES[j + 1])
-            
+
             if vertex.v_refs[i] == None:
                 vertex.v_refs[i] = self.vertices.get(pos[1 - vertex.parity], None)
 
@@ -198,7 +198,7 @@ class Board():
     def add(self, a, b):
         return round(a[0] + b[0], 3), round(a[1] + b[1], 3)
 
-""" 
+"""
 Testing
 """
 class TestGame(unittest.TestCase):
@@ -246,7 +246,7 @@ class TestGame(unittest.TestCase):
             #         if v in v_refs:
             #             curr = v
             #             v_refs.remove(v)
-                        
+
 
             #     if len(v_refs) == 0:
             #         break
@@ -258,7 +258,7 @@ class TestGame(unittest.TestCase):
     def test_vertex_ref_builder(self):
         """
         All cases
-        Tests vertex references in vertices. 
+        Tests vertex references in vertices.
         List Indices always start from positive y-axis (north) and clockwise by center point
         """
         # Even Vertices
@@ -278,7 +278,7 @@ class TestGame(unittest.TestCase):
     def test_vertex_ref(self):
         """
         Single case
-        Tests vertex references in vertices. 
+        Tests vertex references in vertices.
         List Indices always start from positive y-axis (north) and clockwise by center point
         """
         # For Even Vertices
@@ -301,7 +301,7 @@ class TestGame(unittest.TestCase):
 
     def test_vertex_hexagon_ref_builder(self):
         """
-        Tests hexagon references in vertices. 
+        Tests hexagon references in vertices.
         List Indices always start from positive y-axis (north) and clockwise by center point
         """
         # For Even Vertices
@@ -332,7 +332,7 @@ class TestGame(unittest.TestCase):
         v_results[0] += 1
         v_results[-1] += 1
 
-        # Calculate Freq 
+        # Calculate Freq
         for resource in resources:
             r_results[resource] = r_results.get(resource, 0) + 1
         for value in values:
@@ -381,7 +381,7 @@ class TestGame(unittest.TestCase):
             for _v in path:
                 self.assertTrue(_v in ref.v_refs)
                 ref = _v
-            
+
 
 def TestGraphBoard(board):
     x = []

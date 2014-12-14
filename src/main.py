@@ -103,7 +103,7 @@ def GameLoop():
     display = Display()
 
     # Controller Initialization
-    controller = Controller(display, board, dijkstra.DijkstraSettlementAlgorithm)
+    controller = Controller(display, board, dijkstra.DijkstraResourceSettlementAlgorithm)
     controller.drawButtons(START_BUTTON, END_BUTTON)
 
     while True:
