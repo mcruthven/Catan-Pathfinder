@@ -110,7 +110,7 @@ class Board():
         for vertex in self.vertices.values():
             order = {"wood": 0, "wheat": 1, "sheep": 2, "brick": 3, "stone": 4, "desert": 5}
             for hexagon in vertex.h_refs:
-                if hexagon != None:
+                if hexagon != None and hexagon.resource != "desert":
                     vertex.resources[order[hexagon.resource]] += hexagon.value
                 else:
                     vertex.resources[5] += 14

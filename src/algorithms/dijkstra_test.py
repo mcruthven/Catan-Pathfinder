@@ -1,14 +1,14 @@
 import unittest
 from dijkstra import *
-from dijkstra_paths import *
 
 class node(object):
-    def __init__(self, name=None, weight=1, neighbors=None, s_refs=None, resources=[1,1,1,1]):
+    def __init__(self, name=None, weight=1, neighbors=None, s_refs=None,
+        resources=None):
         self.name = name
         self.weight = weight
         self.v_refs = neighbors if neighbors else []
         self.s_refs = s_refs if s_refs else dict()
-        self.resources = resources
+        self.resources = resources if resources else [1,1,1,1,1,1]
     def __repr__(self):
         return self.name
 
@@ -34,37 +34,37 @@ class TestDijkstra(unittest.TestCase):
         self.a.add_neighbors([self.e])
         algorithm = DijkstraAlgorithm()
         path = algorithm.find_path(self.G, self.a, self.e)
-        self.assertEqual([self.a, self.e], path)
+        self.assertEqual([self.a, self.e], path[0])
 
     def test_alternate(self):
         self.b.weight = 4
         algorithm = DijkstraAlgorithm()
         path = algorithm.find_path(self.G, self.a, self.e)
-        self.assertEqual([self.a, self.c, self.d, self.e], path)
+        self.assertEqual([self.a, self.c, self.d, self.e], path[0])
 
     def test_path(self):
         algorithm = DijkstraAlgorithm()
         path = algorithm.find_path(self.G, self.a, self.e)
-        self.assertEqual([self.a, self.b, self.e], path)
+        self.assertEqual([self.a, self.b, self.e], path[0])
 
     def test_basic_resource(self):
         self.a.add_neighbors([self.e])
 
         self.algorithm = DijkstraResourceAlgorithm()
         path = self.algorithm.find_path(self.G, self.a, self.e)
-        self.assertEqual([self.a, self.e], path)
+        self.assertEqual([self.a, self.e], path[0])
 
     def test_alternate_resource(self):
-        self.b.resources = [3, 3, 3, 3]
+        self.b.resources = [3, 3, 3, 3, 3, 3]
 
         self.algorithm = DijkstraResourceAlgorithm()
         path = self.algorithm.find_path(self.G, self.a, self.e)
-        self.assertEqual([self.a, self.c, self.d, self.e], path)
+        self.assertEqual([self.a, self.c, self.d, self.e], path[0])
 
     def test_path_resource(self):
         self.algorithm = DijkstraResourceAlgorithm()
         path = self.algorithm.find_path(self.G, self.a, self.e)
-        self.assertEqual([self.a, self.b, self.e], path)
+        self.assertEqual([self.a, self.b, self.e], path[0])
     # TODO: make better resource tests
 
     def test_all_paths(self):
