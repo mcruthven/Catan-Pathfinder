@@ -1,5 +1,6 @@
 import unittest
 from dijkstra import *
+from dijkstra_paths import *
 
 class node(object):
     def __init__(self, name=None, weight=1, neighbors=None, s_refs=None, resources=[1,1,1,1]):
@@ -62,14 +63,28 @@ class TestDijkstra(unittest.TestCase):
 
     def test_path_resource(self):
         self.algorithm = DijkstraResourceAlgorithm()
-        path, s_path = self.algorithm.find_path(self.G, self.a, self.e)
+        path = self.algorithm.find_path(self.G, self.a, self.e)
         self.assertEqual([self.a, self.b, self.e], path)
     # TODO: make better resource tests
 
-    def test_path_resource(self):
-        self.algorithm = DijkstraSettlementAlgorithm()
-        path, s_path = self.algorithm.find_path(self.G, self.a, self.e)
-        self.assertEqual([self.a, self.b, self.e], path)
+    def test_all_paths(self):
+        self.a.v_refs = []
+        self.b.v_refs = []
+        self.c.v_refs = []
+        self.d.v_refs = []
+        self.e.v_refs = []
+
+        self.a.add_neighbors([self.e, self.b])
+        self.d.add_neighbors([self.c, self.e])
+        self.c.add_neighbors([self.d, self.e])
+        self.b.add_neighbors([self.c, self.d])
+
+        algorithm = DijkstraPathAlgorithm()
+        path = algorithm.find_all_paths(self.G, self.a, self.e, 3)
+
+        self.assertTrue([self.a, self.e] in path)
+        self.assertTrue([self.a, self.b, self.c, self.e] in path)
+        self.assertTrue([self.a, self.b, self.d, self.e] in path)
 
 if __name__ == "__main__":
     unittest.main()

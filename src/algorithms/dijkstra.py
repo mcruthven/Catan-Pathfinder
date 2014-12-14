@@ -43,10 +43,6 @@ class DijkstraAlgorithm(object):
                         self.dist[v] = alt
                         self.previous[v] = u
 
-    @staticmethod
-    def get_refs(v):
-        return v.v_refs
-
     def find_path(self, G, source, target):
         """Return the path to target from the source node
         Inputs:
@@ -71,6 +67,10 @@ class DijkstraAlgorithm(object):
         return path[::-1]
 
     @staticmethod
+    def get_refs(v):
+        return v.v_refs
+
+    @staticmethod
     def update_distance(x, v):
         return x + v.weight
 
@@ -82,7 +82,7 @@ class DijkstraResourceAlgorithm(DijkstraAlgorithm):
 
     def __init__(self):
         DijkstraAlgorithm.__init__(self)
-        self.large_number = [1e4, 1e4, 1e4, 1e4]            # large number greater than any distance in the tree
+        self.large_number = [1e4, 1e4, 1e4, 1e4] # large number greater than any distance in the tree
         self.minimum = [0, 0, 0, 0]
 
     @staticmethod
@@ -94,6 +94,13 @@ class DijkstraResourceAlgorithm(DijkstraAlgorithm):
         return [res_val + v.resources[i] for i, res_val in enumerate(x)]
 
 class DijkstraSettlementAlgorithm(DijkstraAlgorithm):
+
+    @staticmethod
+    def get_refs(v):
+        return v.s_refs
+
+class DijkstraSettlementAlgorithm(DijkstraAlgorithm):
+
     @staticmethod
     def get_refs(v):
         return v.s_refs
