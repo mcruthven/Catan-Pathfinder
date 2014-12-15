@@ -135,10 +135,9 @@ class DijkstraSettlementAlgorithm(DijkstraAlgorithm):
         if path[-1] != self.source:
             raise ValueError('%s does not equal the expected start node, %s'
                              % (path[-1], self.source))
-        return self.get_road_path(path, source)
+        return self.get_road_path(source, path)
 
-    @staticmethod
-    def get_road_path(path, source):
+    def get_road_path(self, source, path):
         """Connect settlements in path using connecting vertices
         Returns:
             The list of connecting roads,
