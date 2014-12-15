@@ -86,5 +86,19 @@ class TestDijkstra(unittest.TestCase):
         self.assertTrue([self.a, self.b, self.c, self.e] in path)
         self.assertTrue([self.a, self.b, self.d, self.e] in path)
 
+    def test_all_settlement_paths(self):
+        self.a.s_refs = [self.e, self.b]
+        self.d.s_refs = [self.c, self.e]
+        self.c.s_refs = [self.d, self.e]
+        self.b.s_refs = [self.c, self.d]
+
+        algorithm = DijkstraSettlementPathAlgorithm()
+        path = algorithm.find_all_paths(self.G, self.a, self.e, 3)
+
+        self.assertTrue([self.a, self.e] in path)
+        self.assertTrue([self.a, self.b, self.c, self.e] in path)
+        self.assertTrue([self.a, self.b, self.d, self.e] in path)
+
+
 if __name__ == "__main__":
     unittest.main()
