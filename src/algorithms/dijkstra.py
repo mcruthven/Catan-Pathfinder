@@ -220,6 +220,7 @@ class DijkstraPathAlgorithm(DijkstraAlgorithm):
             self.reset(G, source, target)
             self.dijkstra(length)
         return [p for l, p in self.dist[target]]
+        # return [(p, [source] + reduce(lambda x, y: x + y, [v1.s_refs[v2] for v1,v2 in zip(p, p[1:])])) for l, p in self.dist[target]]
 
     @staticmethod
     def update_distance(x, v):

@@ -53,8 +53,8 @@ class Display:
         self._drawRectangle(pos1, pos2, color), \
         self._drawText(((pos1[0] + pos2[0])/2.0, (pos1[1] + pos2[1])/2.0), text)
 
-    def drawPath(self, *points):
-        return map(self._drawLine, zip(points, points[1:]))
+    def drawPath(self, points, color = "black"):
+        return [self._drawLine(p, color = color) for p in zip(points, points[1:])]
 
     """
     Lifecycle Functions

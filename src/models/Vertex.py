@@ -15,6 +15,7 @@ class Vertex():
         self.weight = None
         #order: wood, wheat, sheep, brick, stone, desert/none
         self.resources = [0,0,0,0,0,0]
+        self.roll = {}
 
     def __str__(self):
         return "Vertex at " + str(self.pos)

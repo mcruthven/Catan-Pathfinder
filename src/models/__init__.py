@@ -45,6 +45,9 @@ RESOURCES = {
     "stone": .166666
 }
 
+RESOURCE_ORDER = {"wood": 0, "wheat": 1, "sheep": 2, "brick": 3, "stone": 4, "desert": 5}
+
+
 LOW_PROBABILITY = 0.05555555555
 HIGH_PROBABILITY = 2 * LOW_PROBABILITY
 
@@ -108,10 +111,10 @@ class Board():
             hexagon.value = 7 if hexagon.resource == "desert" else values.pop()
 
         for vertex in self.vertices.values():
-            order = {"wood": 0, "wheat": 1, "sheep": 2, "brick": 3, "stone": 4, "desert": 5}
             for hexagon in vertex.h_refs:
                 if hexagon != None and hexagon.resource != "desert":
-                    vertex.resources[order[hexagon.resource]] += hexagon.value
+                    vertex.roll.get(hexagon.value, []).append(hexagon.resource)
+                    vertex.resources[RESOURCE_ORDER[hexagon.resource]] += hexagon.value
                 else:
                     vertex.resources[5] += 14
 
