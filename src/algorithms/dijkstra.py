@@ -225,3 +225,10 @@ class DijkstraPathAlgorithm(DijkstraAlgorithm):
     @staticmethod
     def update_distance(x, v):
         return [[i + 1, p + [v]] for i, p in x if v not in p]
+
+
+class DijkstraSettlementPathAlgorithm(DijkstraPathAlgorithm):
+    @staticmethod
+    def get_refs(v):
+        """get the vertices two to three segments away from v"""
+        return v.s_refs
